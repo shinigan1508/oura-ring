@@ -1,36 +1,17 @@
-import os
-import asyncio
-import requests
-from telegram import Bot
+if "data" not in data or len(data["data"]) == 0:
+    await bot.send_message(chat_id=CHAT_ID, text="Нет данных сна 😴")
+    return
 
-async def main():
-    print("STARTING BOT...")
+sleep = data["data"][0]
 
-    TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-    CHAT_ID = os.environ.get("CHAT_ID")
-    OURA_TOKEN = os.environ.get("OURA_TOKEN")
+score = sleep.get("score", "N/A")
+hr = sleep.get("average_heart_rate", "N/A")
 
-    bot = Bot(token=TELEGRAM_TOKEN)
-
-    url = "https://api.ouraring.com/v2/usercollection/sleep"
-
-    headers = {
-        "Authorization": f"Bearer {OURA_TOKEN}"
-    }
-
-    response = requests.get(url, headers=headers)
-    data = response.json()
-
-    sleep = data["data"][0]
-
-    score = sleep["score"]
-
-    message = f"""
+message = f"""
 Sleep report 💤
 
 Score: {score}
+Avg HR: {hr}
 """
 
-    await bot.send_message(chat_id=CHAT_ID, text=message)
-
-asyncio.run(main())
+await bot.send_message(chat_id=CHAT_ID, text=message)
